@@ -19,6 +19,9 @@ while [[ $# -gt 0 ]]; do
     elif [[ "$1" == --override ]]; then
         override_md5=1
         shift
+    elif [[ "$1" == --rehabman ]]; then
+        rehabman=1
+        shift
     else
         break
     fi
@@ -72,7 +75,11 @@ rename_class=1
 
 
 config=NVMe_patches_$patch_name.plist
-patched=HackrNVMeFamily-$patch_name.kext
+if [[ $spoof_class_code -eq 0 ]]; then
+    patched=HackrNVMeFamily-$patch_name.kext
+else
+    patched=HackrNVMeFamily-${patch_name}-spoof.kext
+fi
 disasm=HackrNVMeFamily-$patch_name.s
 orgdisasm=NVMeFamily-$patch_name.s
 
@@ -80,7 +87,7 @@ if [[ $rehabman -eq 1 ]]; then
     unpatched=./unpatched/IONVMeFamily_$patch_name.kext
 fi
 
-echo "Creating patched $patched"
+echo "Creating patched $patched from $unpatched"
 
 rm -Rf $patched
 cp -RX $unpatched $patched
